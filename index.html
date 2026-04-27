@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Mini Sandbox</title>
+  <style>
+    body { margin: 0; overflow: hidden; }
+    canvas { display: block; }
+  </style>
+</head>
+<body>
+<script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
+
+<script>
+// Scene setup
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x87ceeb);
+
+const camera = new THREE.PerspectiveCamera(
+  75, window.innerWidth/window.innerHeight, 0.1, 1000
+);
+
+const renderer = new THREE.WebGLRenderer();
+renderer.setSize(window.innerWidth, window.innerHeight);
+document.body.appendChild(renderer.domElement);
+
+// Ground
+const groundGeo = new THREE.BoxGeometry(50, 1, 50);
+const groundMat = new THREE.MeshBasicMaterial({ color: 0x228B22 });
+const ground = new THREE.Mesh(groundGeo, groundMat);
+ground.position.y = -1;
+scene.add(ground);
+
+// Player
+camera.position.set(0, 2, 5);
+
+let keys = {};
+document.addEventListener("keydown", e => keys[e.key] = true);
+document.addEventListener("keyup", e => keys[e.key] = false);
+
+// Add blocks
+document.addEventListener("click", () => {
+  const boxGeo = new THREE.BoxGeometry(1,1,1);
+  const boxMat = new THREE.MeshBasicMaterial({ color: Math.random()*0xffffff });
+  const box = new THREE.Mesh(boxGeo, boxMat);
+  
+  box.position.set(
+    camera.position.x,
+    0,
+    camera.position.z - 2
+  );
+  
+  scene.add(box);
+});
+
+// Movement loop
+function animate() {
+  requestAnimationFrame(animate);
+
+  if (keys["w"]) camera.position.z -= 0.1;
+  if (keys["s"]) camera.position.z += 0.1;
+  if (keys["a"]) camera.position.x -= 0.1;
+  if (keys["d"]) camera.position.x += 0.1;
+
+  renderer.render(scene, camera);
+}
+
+animate();
+</script>
+</body>
+</html>
